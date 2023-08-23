@@ -4,7 +4,10 @@
 You are tasked with building a RESTful API for a task management application using the Laravel framework. The application will be used to manage tasks for a user. Users should be able to create, retrieve, update, and delete tasks through the API.
 
 ## Pre-Development
-Before you begin developing, create a branch from master and name it `firstName_lastInitial`, e.g. `git checkout -b james_g` and publish the branch to the remote repo.
+Before you begin developing, create a branch from master and name it `firstName_lastInitial`, e.g. `git checkout -b james_g` and publish the branch to the remote repo.  
+There are also some things to configure before developing:
+- Configure your db credentials inside the .env file. Note: `mysql` is our preferred db, if you do not have mysql, sqlite will suffice. Just update the `.env.example` if you choose.
+- Run `php artisan passport:install`
 
 ## Requirements:
 1. **Authentication and Authorization:**  
