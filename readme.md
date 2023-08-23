@@ -6,7 +6,8 @@ You are tasked with building a RESTful API for a task management application usi
 ## Pre-Development
 Before you begin developing, create a branch from master and name it `firstName_lastInitial`, e.g. `git checkout -b james_g` and publish the branch to the remote repo.  
 There are also some things to configure before developing:
-- Configure your db credentials inside the .env file. Note: `mysql` is our preferred db, if you do not have mysql, sqlite will suffice. Just update the `.env.example` if you choose.
+- Run `composer install`
+- Configure your db credentials inside the .env file. Note: `mysql` is our preferred db, if you do not have mysql, sqlite will suffice. Just make sure to update the `.env.example` so we know which database type to use.
 - Run `php artisan passport:install`
 
 ## Requirements:
