@@ -41,6 +41,7 @@ class Initialise extends Command
     {
         Artisan::call('migrate');
         Artisan::call('passport:install');
+        Artisan::call('db:seed', ['--class' => 'UserSeeder']);
         $this->info('Application initialised successfully!');
     }
 }

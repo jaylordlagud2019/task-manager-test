@@ -4,17 +4,19 @@
 You are tasked with building a RESTful API for a task management application using the Laravel framework. The application will be used to manage tasks for a user. Users should be able to create, retrieve, update, and delete tasks through the API.
 
 ## Pre-Development
-Before you begin developing, create a branch from master and name it `firstName_lastInitial`, e.g. `git checkout -b james_g` and publish the branch to the remote repo.  
+Before you begin developing, create a branch from master and name it `firstName_lastNameInitial`, e.g. `git checkout -b james_g` and publish the branch to the remote repo.  
 There are also some things to configure before developing:
 - Run `composer install`
 - Configure your db credentials inside the .env file. Note: `mysql` is our preferred db, if you do not have mysql, sqlite will suffice. Just make sure to update the `.env.example` so we know which database type to use.
 - Run `php artisan init`
 
+> Note: A default user will be initialised for you to be able to login and retrieve a JWT token. The credentials can be found at `config/default-user.php`. This is mainly for efficiency so you don't have to waste time registering a user yourself (you may wish to do this if you please).
+
 ## Requirements:
 1. **Authentication and Authorization:**  
     Implement JWT (JSON Web Tokens) based authentication for the API. Users should be able to register, log in, and receive a JWT token upon successful authentication (this is set up for you already). 
     
-    **Only authenticated users** should be able to perform CRUD operations on tasks, and they should only be able to access their own tasks.
+    Using this token, **only authenticated users** should be able to perform CRUD operations on tasks, and they should only be able to access their own tasks.
 
 2. **Task CRUD Operations:**  
 Implement API endpoints for the following CRUD operations on tasks:
