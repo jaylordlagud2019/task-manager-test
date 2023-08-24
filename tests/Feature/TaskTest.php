@@ -13,8 +13,8 @@ class TaskTest extends TestCase
 {
     /**
      * Retrieve a list of tasks owned by the authenticated user.
-     * 
-     *  GET PARAMS
+     *  @method GET
+     *  @param
      *  status [pending, in_progress, completed]
      *  per_page default 10
      *  sort_by [title, description, due_date, status]
@@ -50,7 +50,13 @@ class TaskTest extends TestCase
 
     /**
      *  Task created successfully by the authencated user.
-     * 
+     *  @method POST
+     *  @param
+     *  title
+     *  description
+     *  status
+     *  due_date
+     *  user_id
      * 
      * @return status code 200
      */
@@ -84,7 +90,7 @@ class TaskTest extends TestCase
 
     /**
      *  Display the validations upon failed insert attempt.
-     * 
+     *  @method POST
      * 
      * @return status code 400
      */     
@@ -120,7 +126,14 @@ class TaskTest extends TestCase
 
     /**
      *  Task updated successfully by the authencated user.
+     *  @method POST
      * 
+     *  @param
+     *  title
+     *  description
+     *  status
+     *  due_date
+     *  user_id
      * 
      * @return status code 200
      */         
@@ -207,7 +220,10 @@ class TaskTest extends TestCase
 
     /**
      *  Successful deletion of existing task owned by the user.
+     *  @method DELETE
      * 
+     *  @param
+     *  <Task ID>
      * 
      * @return status code 200
      */                
@@ -228,16 +244,19 @@ class TaskTest extends TestCase
         $this->json('DELETE','/api/tasks/'.$Task->id,[],['Authorization' => 'Bearer ' . $token])
             ->assertStatus(200)
             ->assertJson([
-                    "success"=>true,
-                    "data"=>[
-                        "message"=>"Delete successful"
-                        ]
+                "success"=>true,
+                "data"=>[
+                    "message"=>"Delete successful"
+                    ]
             ]);        
      } 
 
     /**
-     *  Failed attempt of deleting task.
+     *  Failed attempt of deleting the task.
+     *  @method DELETE
      * 
+     *  @param
+     *  <Task ID>
      * 
      * @return status code 400
      */                
@@ -252,10 +271,10 @@ class TaskTest extends TestCase
         $this->json('DELETE','/api/tasks/'.$Task_id,[],['Authorization' => 'Bearer ' . $token])
             ->assertStatus(400)
             ->assertJson([
-                    "success"=>false,
-                    "data"=>[
-                        "message"=>"Unauthorized action."
-                        ]                     
+                "success"=>false,
+                "data"=>[
+                    "message"=>"Unauthorized action."
+                    ]                     
             ]);        
      } 
 
