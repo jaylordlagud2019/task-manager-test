@@ -60,7 +60,7 @@ class TaskController extends Controller
             $data['due_date'] = Carbon::parse($data['due_date']);
             
             $task = TaskResource::make(Task::create($data));
-            return response()->json(['task' => $task], 200);
+            return response()->json(['success'=> true,'data'=> $task], 200);  
 
         } catch (Exception $e) {
             return response()->json(['error' => $e->getMessage()], 500);
@@ -117,6 +117,9 @@ class TaskController extends Controller
             $task = Task::where('id',$id)->where('user_id',$user_id)->first();
             if($task)
             {   
+                if(array_key_exists('due_date',$data))
+                $data['due_date'] = Carbon::parse($data['due_date']); 
+
                 $task->fill($data);
                 $task->update();
                 return response()->json(['success'=> true,'data'=> TaskResource::make($task)], 200);                  
@@ -143,7 +146,7 @@ class TaskController extends Controller
         {
             try {
                 if($task->delete())
-                return response()->json(['message' =>"Delete successful"], 200);  
+                return response()->json(['success'=> true, "data"=>['message'=>"Delete successful"]], 200);                  
             } catch (Exception $e) {
                 return response()->json(['error' => $e->getMessage()], 500);
             }            
