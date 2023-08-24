@@ -52,4 +52,4 @@ Implement the ability to sort tasks by title, due date, or status. Also, allow u
 If you're having trouble interpreting the requirements please don't hesitate to email me at `james@medmate.com.au`
 
 ## Submission:
-Once you have finalised the applicaiton, push the finished product to your branch (you may make as many commits as necessary) and send an email to `james@medmate.com.au` including the branch name you worked on and a message to say you're done.
+Once you have finalised the applicaiton, push the finished product to your branch (you may make as many commits as necessary). Create a pull request from your branch to base repository `Medmate-Australia-Pty/task-manager-test` and base branch `master`. Please format the pull request name to be "Submission for <firstName_lastNameInitial>", e.g. "Submission for james_g".
