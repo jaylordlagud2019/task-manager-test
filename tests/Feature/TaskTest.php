@@ -15,10 +15,10 @@ class TaskTest extends TestCase
      * Retrieve a list of tasks owned by the authenticated user.
      * 
      *  GET PARAMS
-     *  status [pending,in_progress,completed]
-     *  per_page
-     *  sort_by 
-     *  sort - [asc,desc]
+     *  status [pending, in_progress, completed]
+     *  per_page default 10
+     *  sort_by [title, description, due_date, status]
+     *  sort - [asc, desc]
      * 
      * @return status code 200
      */
