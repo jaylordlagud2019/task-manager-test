@@ -4,9 +4,14 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use App\Http\Requests\Api\TaskRequest;
+use App\Http\Requests\Api\UpdateTaskRequest;
+use App\Http\Resources\TaskResource;
 use App\Task;
-use Validator;
 use Auth;
+use Carbon\Carbon;
+
 
 class TaskController extends Controller
 {
@@ -15,9 +20,26 @@ class TaskController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return Task::orderBy('created_at', 'asc')->get();
+        try {
+            $sort_by = $request->input('sort_by');
+            $sort_by = $sort_by ? $sort_by : 'title'; 
+    
+            $sort = $request->input('sort');
+            $sort = $sort ? $sort : 'asc'; 
+            $user_id = $request->user()->id;
+            $task = Task::where('user_id',$user_id)->orderBy($sort_by, $sort);
+            if($request->input('status'))
+            $task->where('status','=',$request->input('status'));
+    
+            $result = $task->get();
+    
+            return response()->json(['success'=> true,'data'=> $result], 200);  
+    
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }   
     }
 
     /**
@@ -26,34 +48,19 @@ class TaskController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(TaskRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required',
-            'description' => 'required',
-            'due_date' => 'required | d-F-y',
-            'status' => 'required | in:pending,in_progress,completed'
-        ]);
-        
-        if ($validator->fails()) {
-            $responseArr['message'] = $validator->errors();;
-            return response()->json($responseArr, Response::HTTP_BAD_REQUEST);
-        }else{
-            try {
-                $task = new Task;
-                $task->title = $request->input('title');
-                $task->description = $request->input('description');
-                $task->due_date = $request->input('due_date');
-                $task->status = $request->input('status');
-                $task->user_id = Auth::user()->id;
+        $data = $request->validated();
+        try {
+            $data['user_id'] = 1;//Auth::user()->id;
+            $data['due_date'] = Carbon::parse($data['due_date']);
+            
+            $task = TaskResource::make(Task::create($data));
+            return response()->json(['task' => $task], 200);
 
-                $task->save();
-                return response()->json(['task' => $task], 200);
-
-            } catch (Exception $e) {
-                return response()->json(['error' => $e->getMessage()], 500);
-            }
-        }        
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }   
     }
 
     /**
@@ -64,7 +71,20 @@ class TaskController extends Controller
      */
     public function show($id)
     {
-        //
+        try {
+            $user_id = Auth::user()->id;
+            $task = Task::where('id',$id)->where('user_id',$user_id)->first();
+            if($task)
+            {
+                return response()->json(['success'=> true,'data'=> TaskResource::make($task)], 200);            
+            }else{
+                $responseArr['message'] = "Unauthorized action.";
+                return response()->json($responseArr, Response::HTTP_BAD_REQUEST);                    
+            }
+        }
+        catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }            
     }
 
     /**
@@ -85,40 +105,24 @@ class TaskController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateTaskRequest $request, $id)
     {
-        $validator = Validator::make($request->all(), [
-            'due_date' => 'd-F-y',
-            'status' => 'in:pending,in_progress,completed',
-            'id' => 'required|exists:tasks,id',
-        ]);
-
-        if ($validator->fails()) {
-            $responseArr['message'] = $validator->errors();
-            return response()->json($responseArr, Response::HTTP_BAD_REQUEST);
-        }else{
-            try {
-                $user_id = Auth::user()->id;
-                $task = Task::where('id',$id)->where('user_id',$user_id)->first();
-                if($task)
-                {
-                    $task->title = $request->input('title');
-                    $task->description = $request->input('description');
-                    $task->due_date = $request->input('due_date');
-                    $task->status = $request->input('status');
-                    $task->user_id = Auth::user()->id;
-    
-                    $task->save();
-                    return response()->json(['task' => $task], 200);    
-                }else{
-                    $responseArr['message'] = "Unauthorized action.";
-                    return response()->json($responseArr, Response::HTTP_BAD_REQUEST);                    
-                }
-
-            } catch (Exception $e) {
-                return response()->json(['error' => $e->getMessage()], 500);
+        $data = $request->validated();
+        try {
+            $user_id = $request->user()->id;
+            $task = Task::where('id',$id)->where('user_id',$user_id)->first();
+            if($task)
+            {   
+                $task->fill($data);
+                $task->update();
+                return response()->json(['success'=> true,'data'=> TaskResource::make($task)], 200);                  
+            }else{
+                $responseArr['message'] = "Unauthorized action.";
+                return response()->json($responseArr, Response::HTTP_BAD_REQUEST);                    
             }
-        }      
+        } catch (Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 
     /**

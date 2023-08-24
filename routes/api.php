@@ -23,7 +23,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 
 });
 
+Route::resource('tasks', 'Api\TaskController'); 
+Route::post('/tasks/{id}', 'Api\TaskController@update');
 
 Route::middleware('auth:api')->group(function () {
-    Route::resource('tasks', 'Api\TaskController');
+   
 });

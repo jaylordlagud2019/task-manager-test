@@ -21,7 +21,7 @@ class Tasks extends Migration
             $table->enum('status',['pending','in_progress','completed'])->default('pending');            
 
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('user_id')->references('id')->on('users');
             $table->timestamps();
         });
     }
