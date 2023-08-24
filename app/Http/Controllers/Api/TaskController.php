@@ -15,9 +15,17 @@ use Carbon\Carbon;
 
 class TaskController extends Controller
 {
+
     /**
-     * Display a listing of the resource.
-     *
+     *  Retrieve a list of tasks owned by the authenticated user.
+     * 
+     *  @method GET
+     *  @param
+     *  status [pending, in_progress, completed]
+     *  per_page default 10
+     *  sort_by [title, description, due_date, status]
+     *  sort - [asc, desc]
+     * 
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
@@ -46,10 +54,16 @@ class TaskController extends Controller
         }   
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
+   /**
+     *  Store a newly created resource in storage.
+     * 
+     *  @method POST
+     *  @param
+     *  title
+     *  description
+     *  status
+     *  due_date
+     * 
      * @return \Illuminate\Http\Response
      */
     public function store(TaskRequest $request)
@@ -107,6 +121,13 @@ class TaskController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
+     * 
+     *  Optional Fields
+     *  -title
+     *  -description
+     *  -status
+     *  -due_date
+     * 
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateTaskRequest $request, $id)
