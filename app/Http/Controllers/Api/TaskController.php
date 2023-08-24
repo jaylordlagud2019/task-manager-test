@@ -28,12 +28,16 @@ class TaskController extends Controller
     
             $sort = $request->input('sort');
             $sort = $sort ? $sort : 'asc'; 
+
             $user_id = $request->user()->id;
             $task = Task::where('user_id',$user_id)->orderBy($sort_by, $sort);
+
             if($request->input('status'))
             $task->where('status','=',$request->input('status'));
-    
-            $result = $task->get();
+
+            $per_page = $request->input('per_page');
+            $per_page = $per_page ? $per_page : 10;             
+            $result = $task->paginate($per_page);
     
             return response()->json(['success'=> true,'data'=> $result], 200);  
     
@@ -52,7 +56,7 @@ class TaskController extends Controller
     {
         $data = $request->validated();
         try {
-            $data['user_id'] = 1;//Auth::user()->id;
+            $data['user_id'] = Auth::user()->id;
             $data['due_date'] = Carbon::parse($data['due_date']);
             
             $task = TaskResource::make(Task::create($data));

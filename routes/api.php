@@ -18,14 +18,13 @@ use Illuminate\Support\Facades\Route;
 Route::post('/register', 'Api\AuthController@register');
 Route::post('/login', 'Api\AuthController@login');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 
 });
 
-Route::resource('tasks', 'Api\TaskController'); 
-Route::post('/tasks/{id}', 'Api\TaskController@update');
 
-Route::middleware('auth:api')->group(function () {
-   
+Route::middleware('auth:sanctum')->group(function () {
+    Route::resource('tasks', 'Api\TaskController'); 
+    Route::post('/tasks/{id}', 'Api\TaskController@update');    
 });
