@@ -12,19 +12,20 @@ use App\Task;
 class TaskTest extends TestCase
 {
     /**
-     * A basic feature test example.
-     *
-     * @return void
+     * Retrieve a list of tasks owned by the authenticated user.
+     * 
+     *  GET PARAMS
+     *  status [pending,in_progress,completed]
+     *  per_page
+     *  sort_by 
+     *  sort - [asc,desc]
+     * 
+     * @return status code 200
      */
-    public function testTask__ListbyOwner() {
+
+     public function testTask__ListbyOwner() {
         $user = factory(User::class)->create(['name' => 'test']);
         $token = $user->createToken('auth_token')->plainTextToken;
-    
-        //GET PARAMS
-        //status [pending,in_progress,completed]
-        //per_page
-        //sort_by 
-        //sort - [asc,desc]
     
         $this->json('GET','/api/tasks?per_page=1',[],['Authorization' => 'Bearer ' . $token])
             ->assertStatus(200)
@@ -46,10 +47,19 @@ class TaskTest extends TestCase
             ]);        
      }
 
+
+    /**
+     *  Task created successfully by the authencated user.
+     * 
+     * 
+     * @return status code 200
+     */
      public function testTask__CreateSuccessful() {
+        //Generate user
         $user = factory(User::class)->create(['name' => 'test']);
         $token = $user->createToken('auth_token')->plainTextToken;
     
+        //POST BODY
         $body = [
             "title"=>"test generate",
             "description"=>"test description",
@@ -71,15 +81,24 @@ class TaskTest extends TestCase
             ]);        
      }    
      
+
+    /**
+     *  Display the validations upon failed insert attempt.
+     * 
+     * 
+     * @return status code 400
+     */     
      public function testTask__CreateValidations() {
+        //Generate user
         $user = factory(User::class)->create(['name' => 'test']);
         $token = $user->createToken('auth_token')->plainTextToken;
     
+        //Empty POST body
         $body = [
         ];
 
         $this->json('POST','/api/tasks',$body,['Authorization' => 'Bearer ' . $token])
-            ->assertStatus(200)
+            ->assertStatus(400)
             ->assertJson([
                     "success"=>false,
                     "data"=>[
@@ -99,9 +118,18 @@ class TaskTest extends TestCase
             ]);        
      }     
 
+    /**
+     *  Task updated successfully by the authencated user.
+     * 
+     * 
+     * @return status code 200
+     */         
      public function testTask__UpdateSuccessful() {
+        //Generate user
         $user = factory(User::class)->create(['name' => 'test']);
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        //create task
         $Task = Task::create([
             'user_id'=>$user->id,
             "title"=>"original",
@@ -110,6 +138,7 @@ class TaskTest extends TestCase
             "status"=>"pending"            
         ]);
 
+        //POST BODY -  Updated information
         $new_data = [
             "title"=>"Updated title",
             "description"=>"Updated description",
@@ -131,10 +160,63 @@ class TaskTest extends TestCase
             ]);        
      } 
      
-     
-     public function testTask__DeleteSuccessful() {
+
+    /**
+     *  Display the validation for status and due.
+     * 
+     * 
+     * @return status code 400
+     */           
+     public function testTask__UpdateFailed() {
+        //Generate user
         $user = factory(User::class)->create(['name' => 'test']);
         $token = $user->createToken('auth_token')->plainTextToken;
+        
+        //Create new task
+        $Task = Task::create([
+            'user_id'=>$user->id,
+            "title"=>"original",
+            "description"=>"description",
+            "due_date"=> Carbon::parse("10-10-2025"),
+            "status"=>"pending"            
+        ]);
+
+        //POST BODY
+        $new_data = [
+            "title"=>"Updated title",
+            "description"=>"Updated description",
+            "due_date"=>"650-10-2023", // Invalid date format 
+            "status"=>"Not completed"  // Not included in the enum
+        ];
+
+        $this->json('POST','/api/tasks/'.$Task->id,$new_data,['Authorization' => 'Bearer ' . $token])
+            ->assertStatus(400)
+            ->assertJson([
+                    "success"=>false,
+                    "data"=>[
+                        "due_date"=>[
+                            "The due date is not a valid date."
+                        ],
+                        "status"=>[
+                            "The selected status is invalid."
+                        ]
+                    ]
+            ]);        
+     } 
+
+
+    /**
+     *  Successful deletion of existing task owned by the user.
+     * 
+     * 
+     * @return status code 200
+     */                
+     public function testTask__DeleteSuccessful() {
+        //Generate user
+        $user = factory(User::class)->create(['name' => 'test']);
+        $token = $user->createToken('auth_token')->plainTextToken;
+        
+        //Create new task
         $Task = Task::create([
             'user_id'=>$user->id,
             "title"=>"original",
@@ -150,6 +232,30 @@ class TaskTest extends TestCase
                     "data"=>[
                         "message"=>"Delete successful"
                         ]
+            ]);        
+     } 
+
+    /**
+     *  Failed attempt of deleting task.
+     * 
+     * 
+     * @return status code 400
+     */                
+    public function testTask__DeleteFailed() {
+        //Generate user
+        $user = factory(User::class)->create(['name' => 'test']);
+        $token = $user->createToken('auth_token')->plainTextToken;
+        
+        //Not owned task
+        $Task_id = 1; 
+
+        $this->json('DELETE','/api/tasks/'.$Task_id,[],['Authorization' => 'Bearer ' . $token])
+            ->assertStatus(400)
+            ->assertJson([
+                    "success"=>false,
+                    "data"=>[
+                        "message"=>"Unauthorized action."
+                        ]                     
             ]);        
      } 
 

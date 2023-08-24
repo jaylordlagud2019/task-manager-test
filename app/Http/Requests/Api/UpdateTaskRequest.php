@@ -39,6 +39,6 @@ class UpdateTaskRequest extends FormRequest
         throw new HttpResponseException(response()->json([
             'success'   => false,
             'data'      => $validator->errors()
-        ]));
+        ],400));
     }
 }
