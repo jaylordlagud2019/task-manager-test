@@ -11,6 +11,25 @@ use App\Task;
 
 class TaskTest extends TestCase
 {
+
+    /**
+     *  Failed authentication .
+     *  @method GET
+     *  
+     *  Note: Must have Header Accept: application/json 
+     * @return status code 400
+     */
+
+     public function testTask__FailedAuthentication() {
+        $token = "No bearer"; 
+    
+        $this->json('GET','/api/tasks',[],['Accept'=>'application/json','Authorization' => 'Bearer ' . $token])
+            ->assertStatus(401)
+            ->assertJson([
+                    "message"=> "Unauthenticated."
+            ]);        
+     }
+
     /**
      * Retrieve a list of tasks owned by the authenticated user.
      *  @method GET
@@ -27,7 +46,7 @@ class TaskTest extends TestCase
         $user = factory(User::class)->create(['name' => 'test']);
         $token = $user->createToken('auth_token')->plainTextToken;
     
-        $this->json('GET','/api/tasks?per_page=1',[],['Authorization' => 'Bearer ' . $token])
+        $this->json('GET','/api/tasks?per_page=1',[],['Accept'=>'application/json','Authorization' => 'Bearer ' . $token])
             ->assertStatus(200)
             ->assertJsonStructure(["success",
                 "data"=>[
@@ -73,7 +92,7 @@ class TaskTest extends TestCase
             "status"=>"pending"
         ];
 
-        $this->json('POST','/api/tasks',$body,['Authorization' => 'Bearer ' . $token])
+        $this->json('POST','/api/tasks',$body,['Accept'=>'application/json','Authorization' => 'Bearer ' . $token])
             ->assertStatus(200)
             ->assertJsonStructure([
                 "success",
@@ -103,7 +122,7 @@ class TaskTest extends TestCase
         $body = [
         ];
 
-        $this->json('POST','/api/tasks',$body,['Authorization' => 'Bearer ' . $token])
+        $this->json('POST','/api/tasks',$body,['Accept'=>'application/json','Authorization' => 'Bearer ' . $token])
             ->assertStatus(400)
             ->assertJson([
                     "success"=>false,
@@ -159,7 +178,7 @@ class TaskTest extends TestCase
             "status"=>"completed"
         ];
 
-        $this->json('POST','/api/tasks/'.$Task->id,$new_data,['Authorization' => 'Bearer ' . $token])
+        $this->json('POST','/api/tasks/'.$Task->id,$new_data,['Accept'=>'application/json','Authorization' => 'Bearer ' . $token])
             ->assertStatus(200)
             ->assertJson([
                     "success"=>true,
@@ -202,7 +221,7 @@ class TaskTest extends TestCase
             "status"=>"Not completed"  // Not included in the enum
         ];
 
-        $this->json('POST','/api/tasks/'.$Task->id,$new_data,['Authorization' => 'Bearer ' . $token])
+        $this->json('POST','/api/tasks/'.$Task->id,$new_data,['Accept'=>'application/json','Authorization' => 'Bearer ' . $token])
             ->assertStatus(400)
             ->assertJson([
                     "success"=>false,
@@ -241,7 +260,7 @@ class TaskTest extends TestCase
             "status"=>"pending"            
         ]);
 
-        $this->json('DELETE','/api/tasks/'.$Task->id,[],['Authorization' => 'Bearer ' . $token])
+        $this->json('DELETE','/api/tasks/'.$Task->id,[],['Accept'=>'application/json','Authorization' => 'Bearer ' . $token])
             ->assertStatus(200)
             ->assertJson([
                 "success"=>true,
@@ -268,7 +287,7 @@ class TaskTest extends TestCase
         //Not owned task
         $Task_id = 1; 
 
-        $this->json('DELETE','/api/tasks/'.$Task_id,[],['Authorization' => 'Bearer ' . $token])
+        $this->json('DELETE','/api/tasks/'.$Task_id,[],['Accept'=>'application/json','Authorization' => 'Bearer ' . $token])
             ->assertStatus(400)
             ->assertJson([
                 "success"=>false,
