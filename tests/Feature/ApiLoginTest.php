@@ -35,7 +35,7 @@ class ApiLoginTest extends TestCase
     {
         $body = [];
         $this->json('POST','/api/login',$body,['Accept' => 'application/json'])
-        ->assertStatus(200)
+        ->assertStatus(400)
         ->assertJson([
             "success" => false,
             "message" => "Validation errors",
