@@ -18,7 +18,7 @@ class AuthController extends Controller
 
         $user = UserResource::make(User::create($data));
 
-        $token = $user->createToken(config('app.name'))->accessToken;
+        $token = $user->createToken('auth_token')->accessToken;
 
         return response()->json(['user' => $user, 'token' => $token]);
     }
@@ -30,7 +30,7 @@ class AuthController extends Controller
         }
 
         $user = auth()->user();
-        $token = $user->createToken(config('app.name'))->accessToken;
+        $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json(['user' => UserResource::make($user), 'token' => $token]);
     }
